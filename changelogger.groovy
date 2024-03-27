@@ -6,17 +6,7 @@ import com.amazonaws.services.sqs.model.SendMessageRequest
 import edu.internet2.middleware.grouperClient.util.GrouperClientConfig
 
 class Config {
-    static String  requiredPattern = ":exports:" //"FILTER", "required_stem"
-
-//    static amqpSystem = null
-//    public static ActiveMqGrouperExternalSystem getAmqSystem() {
-//        if (amqpSystem) {
-//            return amqpSystem
-//        } else {
-//            amqpSystem = new ActiveMqGrouperExternalSystem()
-//            amqpSystem.setConfigId("amqp")
-//        }
-//    }
+    static String  requiredPattern = ":exports:"
 }
 
 long lastSequenceProcessed = -1;
@@ -25,24 +15,16 @@ String QUEUE_URL = GrouperClientConfig.retrieveConfig().propertyValueStringRequi
 
 for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
     EsbEvent esbEvent = esbEventContainer.getEsbEvent();
-    //gsh_builtin_debugMap.put(esbEventContainer.getSequenceNumber() + "_" + esbEvent.getGroupName(), esbEvent.getSourceId() + "_" + esbEvent.getSubjectId());
-    //gsh_builtin_hib3GrouperLoaderLog.addInsertCount(1);
-
-    /*
-    {
-      "action": "add",
-      "group": groupName,
-      "subject": subjectId
-    }
-
-     */
     gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Testing\n")
     def action_name =  esbEvent.eventType
     gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] action name: '" + action_name + "'\n")
     if (action_name == 'MEMBERSHIP_ADD' || action_name == 'MEMBERSHIP_DELETE') {
 
+        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Action type meets criteria.\n")
         def subjectId = esbEvent.subjectId
         def groupName = esbEvent.groupName
+        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] subject ID: " + subjectId + "\n")
+        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
 
         if (groupName.contains(Config.requiredPattern)) {
             gsh_builtin_debugMap.put(esbEventContainer.sequenceNumber + "_" + groupName, esbEvent.sourceId + "_" + subjectId)
