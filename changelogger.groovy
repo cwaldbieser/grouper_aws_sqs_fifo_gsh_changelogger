@@ -27,7 +27,9 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
 
         if (groupName.contains(Config.requiredPattern)) {
+            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name meets pattern criteria.\n")
             gsh_builtin_debugMap.put(esbEventContainer.sequenceNumber + "_" + groupName, esbEvent.sourceId + "_" + subjectId)
+            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Sequence number: " + esbEventContainer.sequenceNumber + ".\n")
             try {
 
                 String sqsAction = 'unknown'
@@ -43,12 +45,20 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
                 pojo.put("subject", subjectId)
                 String json = GrouperUtil.jsonConvertTo(pojo)
 
+                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage(
+                    "[XYZZY] Sending message- action: " + sqsAction 
+                    + ", group: " + groupName 
+                    + ", subject:" + subjectId + ".\n")
                 SendMessageRequest request = new SendMessageRequest().
                         withQueueUrl(QUEUE_URL).
                         withMessageBody(json).
                         withMessageGroupId(groupName).
                         withMessageDeduplicationId(UUID.randomUUID().toString())
                 sqs.sendMessage(request)
+                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage(
+                    "[XYZZY] Sent message- action: " + sqsAction 
+                    + ", group: " + groupName 
+                    + ", subject:" + subjectId + ".\n")
             } catch (SocketException e) {
                 // TODO try to reconnect
                 gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("Connection error sending message: ${e.stackTrace}\n")
