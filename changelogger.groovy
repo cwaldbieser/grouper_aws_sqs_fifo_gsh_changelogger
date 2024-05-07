@@ -4,10 +4,7 @@ import com.amazonaws.services.sqs.model.AmazonSQSException
 import com.amazonaws.services.sqs.model.CreateQueueRequest
 import com.amazonaws.services.sqs.model.SendMessageRequest
 import edu.internet2.middleware.grouperClient.util.GrouperClientConfig
-
-class Config {
-    static String  requiredPattern = ":exports:"
-}
+import edu.internet2.middleware.grouper.*
 
 long lastSequenceProcessed = -1;
 AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
@@ -17,6 +14,7 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
     EsbEvent esbEvent = esbEventContainer.getEsbEvent();
     gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Testing\n")
     def action_name =  esbEvent.eventType
+    def attrib_def_name = "etc:attribute:myAttributes:myExportToFifoMark"
     gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] action name: '" + action_name + "'\n")
     if (action_name == 'MEMBERSHIP_ADD' || action_name == 'MEMBERSHIP_DELETE') {
 
@@ -26,8 +24,23 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] subject ID: " + subjectId + "\n")
         gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
 
-        if (groupName.contains(Config.requiredPattern)) {
-            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name meets pattern criteria.\n")
+        Group group = new GroupFinder().addGroupName(groupName).findGroup()
+        stem = group.parentStem
+        attribs = stem.attributeDelegate.retrieveAttributes()
+        stem_has_mark = attribs.any { adn ->
+            adn.name == attrib_def_name
+        }
+        group_has_mark = attribs.any { adn ->
+            adn.name == attrib_def_name
+        }
+
+        if (stem_has_mark || group_has_mark) {
+            if (stem_has_mark) {
+                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] stem has export mark.\n")
+            }
+            if (group_has_mark) {
+                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group has export mark.\n")
+            }
             gsh_builtin_debugMap.put(esbEventContainer.sequenceNumber + "_" + groupName, esbEvent.sourceId + "_" + subjectId)
             gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Sequence number: " + esbEventContainer.sequenceNumber + ".\n")
             try {
