@@ -30,6 +30,7 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         stem_has_mark = attribs.any { adn ->
             adn.name == attrib_def_name
         }
+        attribs = group.attributeDelegate.retrieveAttributes()
         group_has_mark = attribs.any { adn ->
             adn.name == attrib_def_name
         }
