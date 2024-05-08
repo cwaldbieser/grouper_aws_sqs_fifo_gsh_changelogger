@@ -27,13 +27,19 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         Group group = new GroupFinder().addGroupName(groupName).findGroup()
         stem = group.parentStem
         attribs = stem.attributeDelegate.retrieveAttributes()
+        //stem_attrib_count = attribs.size()
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] stem_attrib_count: " + stem_attrib_count + "\n")
         stem_has_mark = attribs.any { adn ->
             adn.name == attrib_def_name
         }
         attribs = group.attributeDelegate.retrieveAttributes()
+        //group_attrib_count = attribs.size()
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group_attrib_count: " + group_attrib_count + "\n")
         group_has_mark = attribs.any { adn ->
             adn.name == attrib_def_name
         }
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] stem_has_mark: " + stem_has_mark + "\n")
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group_has_mark: " + group_has_mark + "\n")
 
         if (stem_has_mark || group_has_mark) {
             if (stem_has_mark) {
