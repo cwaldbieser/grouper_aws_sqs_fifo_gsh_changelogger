@@ -25,6 +25,10 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
 
         Group group = new GroupFinder().addGroupName(groupName).findGroup()
+        if (group == null) {
+            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Group object was null.  Skipping ...\n")
+            continue
+        }
         stem = group.parentStem
         attribs = stem.attributeDelegate.retrieveAttributes()
         //stem_attrib_count = attribs.size()
