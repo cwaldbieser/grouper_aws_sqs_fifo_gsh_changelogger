@@ -12,21 +12,21 @@ String QUEUE_URL = GrouperClientConfig.retrieveConfig().propertyValueStringRequi
 
 for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
     EsbEvent esbEvent = esbEventContainer.getEsbEvent();
-    gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Testing\n")
+    //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Testing\n")
     def action_name =  esbEvent.eventType
     def attrib_def_name = "etc:attribute:myAttributes:myExportToFifoMark"
-    gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] action name: '" + action_name + "'\n")
+    //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] action name: '" + action_name + "'\n")
     if (action_name == 'MEMBERSHIP_ADD' || action_name == 'MEMBERSHIP_DELETE') {
-
-        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Action type meets criteria.\n")
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Action type meets criteria.\n")
         def subjectId = esbEvent.subjectId
         def groupName = esbEvent.groupName
-        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] subject ID: " + subjectId + "\n")
-        gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] subject ID: " + subjectId + "\n")
+        //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group name: " + groupName + "\n")
 
         Group group = new GroupFinder().addGroupName(groupName).findGroup()
         if (group == null) {
             gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Group object was null.  Skipping ...\n")
+            lastSequenceProcessed = esbEventContainer.getSequenceNumber();
             continue
         }
         stem = group.parentStem
@@ -46,12 +46,12 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
         //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group_has_mark: " + group_has_mark + "\n")
 
         if (stem_has_mark || group_has_mark) {
-            if (stem_has_mark) {
-                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] stem has export mark.\n")
-            }
-            if (group_has_mark) {
-                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group has export mark.\n")
-            }
+            //if (stem_has_mark) {
+            //    gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] stem has export mark.\n")
+            //}
+            //if (group_has_mark) {
+            //    gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group has export mark.\n")
+            //}
             gsh_builtin_debugMap.put(esbEventContainer.sequenceNumber + "_" + groupName, esbEvent.sourceId + "_" + subjectId)
             gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Sequence number: " + esbEventContainer.sequenceNumber + ".\n")
             try {
@@ -69,10 +69,10 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
                 pojo.put("subject", subjectId)
                 String json = GrouperUtil.jsonConvertTo(pojo)
 
-                gsh_builtin_hib3GrouperLoaderLog.appendJobMessage(
-                    "[XYZZY] Sending message- action: " + sqsAction 
-                    + ", group: " + groupName 
-                    + ", subject:" + subjectId + ".\n")
+                //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage(
+                //    "[XYZZY] Sending message- action: " + sqsAction 
+                //    + ", group: " + groupName 
+                //    + ", subject:" + subjectId + ".\n")
                 SendMessageRequest request = new SendMessageRequest().
                         withQueueUrl(QUEUE_URL).
                         withMessageBody(json).
@@ -95,5 +95,6 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
     }
     lastSequenceProcessed = esbEventContainer.getSequenceNumber();
 }
+gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] lastSequenceProcessed: ${lastSequenceProcessed}\n")
 return lastSequenceProcessed;
 
