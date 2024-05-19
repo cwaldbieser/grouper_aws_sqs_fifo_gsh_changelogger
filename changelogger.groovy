@@ -25,7 +25,7 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
 
         Group group = new GroupFinder().addGroupName(groupName).findGroup()
         if (group == null) {
-            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Group object was null.  Skipping ...\n")
+            //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Group object was null.  Skipping ...\n")
             lastSequenceProcessed = esbEventContainer.getSequenceNumber();
             continue
         }
@@ -53,7 +53,7 @@ for (EsbEventContainer esbEventContainer : gsh_builtin_esbEventContainers) {
             //    gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] group has export mark.\n")
             //}
             gsh_builtin_debugMap.put(esbEventContainer.sequenceNumber + "_" + groupName, esbEvent.sourceId + "_" + subjectId)
-            gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Sequence number: " + esbEventContainer.sequenceNumber + ".\n")
+            //gsh_builtin_hib3GrouperLoaderLog.appendJobMessage("[XYZZY] Sequence number: " + esbEventContainer.sequenceNumber + ".\n")
             try {
 
                 String sqsAction = 'unknown'
